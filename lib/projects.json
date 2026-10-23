@@ -1,0 +1,74 @@
+[
+  {
+    "title": "Portfolio Website",
+    "year": 2026,
+    "image": "https://vis-society.github.io/labs/2/images/empty.svg",
+    "description": "Built my personal website using HTML, CSS, and JavaScript."
+  },
+  {
+    "title": "Credit Risk Predictor",
+    "year": 2026,
+    "image": "https://vis-society.github.io/labs/2/images/empty.svg",
+    "description": "Built an XGBoost credit-default model using Lending Club loan data and deployed a Streamlit dashboard with SHAP explanations."
+  },
+  {
+    "title": "Power Outage Severity Predictor",
+    "year": 2026,
+    "image": "https://vis-society.github.io/labs/2/images/empty.svg",
+    "description": "Analyzed U.S. power outage records, built a Random Forest severity classifier, and evaluated missingness and fairness across population-density tiers."
+  },
+  {
+    "title": "Autonomous RC Car",
+    "year": 2026,
+    "image": "https://vis-society.github.io/labs/2/images/empty.svg",
+    "description": "Developed autonomous lane following and obstacle avoidance using Python, OpenCV, DonkeyCar, and an OAK-D camera."
+  },
+  {
+    "title": "Video Game Sales Data Analysis and Visualization",
+    "year": 2025,
+    "image": "https://vis-society.github.io/labs/2/images/empty.svg",
+    "description": "Used R to analyze global video game sales by platform, genre, region, and release year, and created an HTML report of the findings."
+  },
+  {
+    "title": "Project 6",
+    "image": "https://vis-society.github.io/labs/2/images/empty.svg",
+    "description": "Placeholder project with a sample year of 2024.",
+    "year": 2024
+  },
+  {
+    "title": "Project 7",
+    "image": "https://vis-society.github.io/labs/2/images/empty.svg",
+    "description": "Placeholder project with a sample year of 2025.",
+    "year": 2025
+  },
+  {
+    "title": "Project 8",
+    "image": "https://vis-society.github.io/labs/2/images/empty.svg",
+    "description": "Placeholder project with a sample year of 2026.",
+    "year": 2026
+  },
+  {
+    "title": "Project 9",
+    "image": "https://vis-society.github.io/labs/2/images/empty.svg",
+    "description": "Placeholder project with a sample year of 2024.",
+    "year": 2024
+  },
+  {
+    "title": "Project 10",
+    "image": "https://vis-society.github.io/labs/2/images/empty.svg",
+    "description": "Placeholder project with a sample year of 2025.",
+    "year": 2025
+  },
+  {
+    "title": "Project 11",
+    "image": "https://vis-society.github.io/labs/2/images/empty.svg",
+    "description": "Placeholder project with a sample year of 2026.",
+    "year": 2026
+  },
+  {
+    "title": "Project 12",
+    "image": "https://vis-society.github.io/labs/2/images/empty.svg",
+    "description": "Placeholder project with a sample year of 2024.",
+    "year": 2024
+  }
+]
