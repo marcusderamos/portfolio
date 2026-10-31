@@ -10,7 +10,13 @@
 </head>
 <body>
     <h1 class="projects-title">Projects</h1>
-
+    <div class="projects-chart">
+      <svg id="projects-plot" viewBox="-50 -50 100 100" role="group" aria-label="Projects by year"></svg>
+      <ul class="legend" aria-label="Filter projects by year"></ul>
+    </div>
+    <input class="searchBar" type="search" aria-label="Search projects" placeholder="Search projects…">
+    <button class="clear-filters" type="button">Clear filters</button>
+    <p class="project-status" role="status" aria-live="polite"></p>
     <div class="projects"></div>
 </body>
 </html>

@@ -150,3 +150,93 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 1.5em;
   font-weight: bold;
 }
+
+.project-year {
+  opacity: 0.7;
+  font-family: Baskerville, serif;
+  font-variant-numeric: oldstyle-nums;
+}
+/* Lab 5: Project chart, legend, and combined filters */
+#projects-plot {
+  width: min(100%, 20em);
+  max-width: 20em;
+  margin-block: 2em;
+  overflow: visible;
+  flex: 0 1 20em;
+}
+.projects-chart {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2em;
+}
+.legend {
+  flex: 1 1 15em;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9em, 1fr));
+  gap: 1em;
+  list-style: none;
+  padding: 1em;
+  margin: 0;
+  border: 1px solid oklch(50% 10% 200 / 40%);
+  border-radius: 0.3em;
+}
+.legend-item button {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  width: 100%;
+  padding: 0.5em;
+  color: inherit;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0.25em;
+  cursor: pointer;
+}
+.swatch {
+  display: inline-block;
+  width: 1em;
+  aspect-ratio: 1;
+  flex-shrink: 0;
+  border-radius: 0.2em;
+  background: var(--color);
+}
+#projects-plot path {
+  cursor: pointer;
+  transition: opacity 300ms, fill 300ms;
+  stroke: canvas;
+  stroke-width: 0.4;
+}
+#projects-plot:has(path:hover) path:not(:hover) {
+  opacity: 0.5;
+}
+#projects-plot path.selected {
+  fill: oklch(60% 0.24 0);
+  stroke: canvastext;
+  stroke-width: 1;
+}
+.legend-item.selected {
+  --color: oklch(60% 0.24 0) !important;
+}
+.legend-item.selected button {
+  border-color: var(--color);
+  font-weight: bold;
+}
+#projects-plot path:focus-visible,
+.legend-item button:focus-visible {
+  outline: 2px solid canvastext;
+  outline-offset: 3px;
+}
+.searchBar {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6em;
+  margin-block: 1em;
+}
+.clear-filters {
+  padding: 0.4em 0.8em;
+  cursor: pointer;
+}
+.project-status {
+  margin-block: 1em 2em;
+}
