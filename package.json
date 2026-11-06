@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "elocuent": "^0.0.4"
+  },
+  "scripts": {
+    "analyze": "elocuent -d . -o meta/loc.csv --spaces 2"
+  }
+}

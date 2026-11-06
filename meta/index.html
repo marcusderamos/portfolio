@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meta</title>
+  <link rel="stylesheet" href="../style.css">
+  <script src="../global.js" type="module"></script>
+  <script src="main.js" type="module"></script>
+</head>
+<body class="meta-page">
+  <h1>Meta</h1>
+  <section aria-labelledby="summary-heading">
+    <h2 id="summary-heading">Code summary</h2>
+    <div id="stats"></div>
+  </section>
+  <section aria-labelledby="chart-heading">
+    <h2 id="chart-heading">Commits by time of day</h2>
+    <p class="meta-note">Dot size shows surviving lines of code per commit. Times are local.</p>
+    <p id="brush-help">Hover for details. Drag to select commits.</p>
+    <div id="chart" aria-describedby="brush-help"></div>
+    <button id="clear-selection" type="button">Clear selection</button>
+    <p id="selection-count" role="status" aria-live="polite">No commits selected</p>
+    <h3>Selected language breakdown</h3>
+    <dl id="language-breakdown" class="stats"></dl>
+    <p id="meta-error" role="alert" hidden></p>
+  </section>
+  <dl id="commit-tooltip" class="info tooltip" hidden>
+    <dt>Commit</dt><dd><a id="commit-link" href="#" target="_blank" rel="noopener"></a></dd>
+    <dt>Date</dt><dd id="commit-date"></dd>
+    <dt>Time</dt><dd id="commit-time"></dd>
+    <dt>Author</dt><dd id="commit-author"></dd>
+    <dt>Lines</dt><dd id="commit-lines"></dd>
+  </dl>
+</body>
+</html>

@@ -240,3 +240,53 @@ h1, h2, h3, h4, h5, h6 {
 .project-status {
   margin-block: 1em 2em;
 }
+
+/* Lab 6: Code history, commit tooltips, and brushing */
+.meta-page .stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10em, 1fr));
+  gap: 1.5em;
+  margin-block: 1.5em 2.5em;
+}
+.meta-page .stat-item dt { opacity: 0.7; }
+.meta-page .stat-item dd { margin: 0.3em 0 0; font-size: 1.5em; font-weight: 600; }
+.meta-note { font-size: 0.9em; opacity: 0.8; }
+#chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+#chart .axis, #chart .axis-label { font-size: 14px; fill: currentColor; }
+#chart .gridlines .domain { display: none; }
+#chart .gridlines line { stroke: currentColor; stroke-opacity: 0.12; }
+#chart .dots circle {
+  fill: steelblue;
+  fill-opacity: 0.7;
+  stroke: canvas;
+  stroke-width: 1;
+  transition: fill 200ms, fill-opacity 200ms, transform 200ms;
+  transform-origin: center;
+  transform-box: fill-box;
+  cursor: pointer;
+}
+#chart .dots circle:is(:hover, :focus) { transform: scale(1.5); fill-opacity: 1; outline: none; stroke: canvastext; }
+#chart .dots circle.selected { fill: #e45756; stroke: canvastext; stroke-width: 2; }
+#chart .commit-brush .selection { fill: steelblue; fill-opacity: 0.12; stroke: currentColor; stroke-dasharray: 5 3; }
+dl.info { display: grid; grid-template-columns: auto 1fr; gap: 0.35em 1em; }
+dl.info dt { opacity: 0.7; }
+dl.info dd { margin: 0; overflow-wrap: anywhere; }
+#commit-tooltip {
+  position: fixed;
+  z-index: 10;
+  max-width: min(24em, calc(100vw - 3em));
+  padding: 1em;
+  margin: 0;
+  background: canvas;
+  color: canvastext;
+  border: 1px solid oklch(50% 10% 200 / 40%);
+  border-radius: 0.4em;
+  box-shadow: 0 4px 18px #0003;
+  font-size: 0.85em;
+}
+#commit-tooltip[hidden] { display: none; }
+#clear-selection { padding: 0.4em 0.8em; cursor: pointer; }
+#meta-error { color: #b52b2b; }
+@media (prefers-reduced-motion: reduce) {
+  #chart .dots circle { transition: none; }
+}
