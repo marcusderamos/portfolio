@@ -1,3 +1,4 @@
+import { createTimelineController } from './timeline-controller.mjs';
 import commitMessages from './commit-messages.js';
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
 import scrollama from 'https://cdn.jsdelivr.net/npm/scrollama@3.2.0/+esm';
@@ -225,12 +226,27 @@ try {
     updateScatterPlot(filtered, activeId);
     updateFileDisplay(filtered);
   }
-  slider.addEventListener('input', () => updateUntil(timeScale.invert(Number(slider.value))));
-  document.querySelector('#show-all-commits').addEventListener('click', () => updateUntil(commits.at(-1).datetime));
-  steps.on('focusin', (event, d) => updateUntil(d.datetime, d.id));
+  const followScroll = document.querySelector('#follow-scroll');
+  const timelineStatus = document.querySelector('#timeline-status');
+  const timeline = createTimelineController((cutoff, activeId, followingScroll) => {
+    followScroll.checked = followingScroll;
+    timelineStatus.textContent = followingScroll
+      ? 'Following the narrative as you scroll.'
+      : 'Manual selection. Enable “Follow scrolling” to resume the narrative.';
+    updateUntil(cutoff, activeId);
+  });
+  slider.addEventListener('input', () => timeline.select(timeScale.invert(Number(slider.value))));
+  document.querySelector('#show-all-commits').addEventListener('click', () => timeline.select(commits.at(-1).datetime));
+  followScroll.addEventListener('change', () => {
+    timelineStatus.textContent = followScroll.checked
+      ? 'Following the narrative as you scroll.'
+      : 'Manual selection. Enable “Follow scrolling” to resume the narrative.';
+    timeline.follow(followScroll.checked);
+  });
+  steps.on('focusin', (event, d) => timeline.select(d.datetime, d.id));
   updateUntil(commits.at(-1).datetime);
   const scroller = scrollama().setup({step: '#scatter-story .step', offset: 0.5})
-    .onStepEnter(({element}) => updateUntil(element.__data__.datetime, element.__data__.id));
+    .onStepEnter(({element}) => timeline.enterStep(element.__data__.datetime, element.__data__.id));
   window.addEventListener('resize', () => scroller.resize());
 } catch (error) {
   console.error('Unable to load code history:', error);

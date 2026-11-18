@@ -12,9 +12,11 @@
   <h1>Meta</h1>
   <div class="commit-filter">
     <label for="commit-progress">Show commits until:</label>
-    <input id="commit-progress" type="range" min="0" max="100" step="any" value="100">
+    <input id="commit-progress" type="range" min="0" max="100" step="any" value="100" aria-describedby="timeline-status">
     <time id="commit-cutoff"></time>
     <button id="show-all-commits" type="button">Show all commits</button>
+    <label class="follow-scroll-option"><input id="follow-scroll" type="checkbox" checked> Follow scrolling</label>
+    <p id="timeline-status" role="status">Following the narrative as you scroll.</p>
   </div>
   <section aria-labelledby="summary-heading">
     <h2 id="summary-heading">Code summary</h2>

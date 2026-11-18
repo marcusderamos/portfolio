@@ -348,3 +348,7 @@ dl.info dd { margin: 0; overflow-wrap: anywhere; }
   .meta-page #stats .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   #commit-cutoff { flex-basis: 100%; }
 }
+
+/* Slider choices stay in manual mode until narrative following is resumed. */
+.follow-scroll-option { display: inline-flex; align-items: center; gap: 0.4em; font-size: 0.85em; cursor: pointer; }
+#timeline-status { flex-basis: 100%; margin: 0; font-size: 0.8em; opacity: 0.75; }
