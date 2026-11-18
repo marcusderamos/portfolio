@@ -10,12 +10,21 @@
 </head>
 <body class="meta-page">
   <h1>Meta</h1>
+  <div class="commit-filter">
+    <label for="commit-progress">Show commits until:</label>
+    <input id="commit-progress" type="range" min="0" max="100" step="any" value="100">
+    <time id="commit-cutoff"></time>
+    <button id="show-all-commits" type="button">Show all commits</button>
+  </div>
   <section aria-labelledby="summary-heading">
     <h2 id="summary-heading">Code summary</h2>
     <div id="stats"></div>
   </section>
   <section aria-labelledby="chart-heading">
     <h2 id="chart-heading">Commits by time of day</h2>
+    <div id="scrolly-1">
+    <div id="scatter-story" aria-label="Commit history narrative"></div>
+    <div id="scatter-plot">
     <p class="meta-note">Dot size shows surviving lines of code per commit. Times are local.</p>
     <p id="brush-help">Hover for details. Drag to select commits.</p>
     <div id="chart" aria-describedby="brush-help"></div>
@@ -23,7 +32,15 @@
     <p id="selection-count" role="status" aria-live="polite">No commits selected</p>
     <h3>Selected language breakdown</h3>
     <dl id="language-breakdown" class="stats"></dl>
+    </div>
+    </div>
     <p id="meta-error" role="alert" hidden></p>
+  </section>
+  <section aria-labelledby="files-heading">
+    <h2 id="files-heading">Files over time</h2>
+    <p class="meta-note">Each dot represents one surviving line of code at the selected cutoff.</p>
+    <ul id="file-legend" aria-label="Code languages"></ul>
+    <dl id="files"></dl>
   </section>
   <dl id="commit-tooltip" class="info tooltip" hidden>
     <dt>Commit</dt><dd><a id="commit-link" href="#" target="_blank" rel="noopener"></a></dd>

@@ -290,3 +290,61 @@ dl.info dd { margin: 0; overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) {
   #chart .dots circle { transition: none; }
 }
+
+/* Lab 8: timeline, scrollytelling, and file units */
+.commit-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75em; }
+#commit-progress { flex: 1; min-width: 8em; }
+#commit-cutoff { font-size: 0.85em; font-variant-numeric: tabular-nums; }
+#scrolly-1 { display: grid; grid-template-columns: minmax(12em, 1fr) minmax(0, 2fr); gap: 2em; position: relative; }
+#scatter-plot { position: sticky; top: 1em; align-self: start; max-height: calc(100vh - 2em); overflow-y: auto; }
+#scatter-story .step { min-height: 65vh; box-sizing: border-box; padding: 2em 1em; border-left: 3px solid transparent; opacity: 0.55; }
+#scatter-story .step.is-active { border-left-color: var(--color-accent); opacity: 1; }
+#scatter-story time { font-size: 0.9em; }
+#chart .dots circle { transition: r 300ms, fill 200ms, fill-opacity 200ms, transform 200ms; }
+@starting-style { #chart .dots circle { r: 0; } }
+#files { display: grid; grid-template-columns: minmax(9em, 1fr) minmax(0, 3fr); gap: 1.5em 1em; }
+#files > .file-row { display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; }
+#files dt { overflow-wrap: anywhere; }
+#files small { display: block; opacity: 0.65; margin-top: 0.3em; }
+#files dd { margin: 0; display: flex; flex-wrap: wrap; align-content: start; gap: 0.15em; padding-top: 0.4em; }
+#files .loc { width: 0.5em; height: 0.5em; flex: 0 0 0.5em; border-radius: 50%; background: var(--color); }
+#file-legend { display: flex; flex-wrap: wrap; list-style: none; gap: 1em; padding: 0; }
+#file-legend li { display: flex; align-items: center; gap: 0.4em; }
+.file-swatch { width: 0.75em; height: 0.75em; border-radius: 50%; }
+@media (max-width: 650px) {
+  #scrolly-1 { display: flex; flex-direction: column-reverse; gap: 0; }
+  #scatter-plot { top: 0; z-index: 2; background: canvas; max-height: 52vh; padding-bottom: 0.5em; }
+  #scatter-story .step { min-height: 70vh; padding-top: 2em; }
+  #files { grid-template-columns: minmax(7em, 1fr) minmax(0, 2fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #chart .dots circle { transition: none; }
+}
+
+/* Compact Meta layout and active narrative state */
+.meta-page h1 { font-size: clamp(2.25rem, 5vw, 3rem); margin-block: 0.5em; }
+.meta-page h2 { font-size: 1.4em; margin-block: 1.2em 0.8em; }
+.meta-page #stats .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.8em 1.25em; margin-block: 1em 1.5em; }
+.meta-page #stats dt { font-size: 0.8em; }
+.meta-page #stats dd { font-size: 1.1em; }
+.meta-page #stats .stat-item:nth-child(-n + 3) dd { font-size: 1.65em; }
+.commit-filter { padding-block: 0.75em; border-block: 1px solid oklch(50% 10% 200 / 30%); }
+#show-all-commits { padding: 0.35em 0.7em; font-size: 0.85em; cursor: pointer; }
+#scrolly-1 { grid-template-columns: minmax(0, 1fr) minmax(0, 2.5fr); gap: 1.5em; }
+#scatter-story h3 { font-size: 1.1em; margin-top: 0; }
+#scatter-story .step { padding: 1.25em 0.9em; }
+#scatter-plot > p { margin-block: 0.5em; font-size: 0.8em; }
+#chart svg { max-height: 57vh; }
+#chart .dots circle.earlier-commit { fill: #8b969e; fill-opacity: 0.4; }
+#chart .dots circle.active-commit { fill: var(--color-accent); fill-opacity: 1; stroke: canvastext; stroke-width: 1.5; }
+#chart .dots circle.selected { fill: #e45756; fill-opacity: 1; }
+#scatter-plot h3 { font-size: 0.95em; margin-block: 0.75em; }
+#scatter-plot .stats { gap: 0.5em; margin-block: 0.5em; }
+#scatter-plot .stat-item dd { font-size: 0.9em; }
+@media (max-width: 650px) {
+  #scrolly-1 { display: flex; }
+  #chart svg { max-height: 32vh; }
+  #scatter-plot > .meta-note { display: none; }
+  .meta-page #stats .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #commit-cutoff { flex-basis: 100%; }
+}

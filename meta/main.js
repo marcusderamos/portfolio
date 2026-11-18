@@ -1,4 +1,6 @@
+import commitMessages from './commit-messages.js';
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
+import scrollama from 'https://cdn.jsdelivr.net/npm/scrollama@3.2.0/+esm';
 
 async function loadData() {
   return d3.csv('loc.csv', row => ({
@@ -24,7 +26,7 @@ function processCommits(data) {
       value: lines, enumerable: false, writable: false, configurable: false,
     });
     return commit;
-  });
+  }).sort((a, b) => a.datetime - b.datetime || a.id.localeCompare(b.id));
 }
 
 function renderCommitInfo(data, commits) {
@@ -33,10 +35,11 @@ function renderCommitInfo(data, commits) {
     ['Lines of code', data.length],
     ['Contributing commits', commits.length],
     ['Files', files.length],
-    ['Average line length', `${d3.mean(data, d => d.length).toFixed(1)} characters`],
-    ['Longest line', `${d3.max(data, d => d.length)} characters`],
-    ['Maximum depth', d3.max(data, d => d.depth)],
+    ['Average line length', `${(d3.mean(data, d => d.length) || 0).toFixed(1)} characters`],
+    ['Longest line', `${d3.max(data, d => d.length) || 0} characters`],
+    ['Maximum depth', d3.max(data, d => d.depth) || 0],
   ];
+  d3.select('#stats').selectAll('*').remove();
   const dl = d3.select('#stats').append('dl').attr('class', 'stats');
   for (const [label, value] of stats) {
     const item = dl.append('div').attr('class', 'stat-item');
@@ -115,17 +118,9 @@ function renderScatterPlot(data, commits) {
 
   // Brush is below dots: it catches background drags without blocking tooltips.
   const brushLayer = svg.append('g').attr('class', 'commit-brush');
-  const dots = svg.append('g').attr('class', 'dots').selectAll('circle')
-    .data(d3.sort(commits, d => -d.totalLines)).join('circle')
-    .attr('cx', d => xScale(d.datetime)).attr('cy', d => yScale(d.hourFrac))
-    .attr('r', d => rScale(d.totalLines)).attr('tabindex', 0).attr('role', 'button')
-    .attr('aria-label', d => `${d.id.slice(0, 8)}, ${d.datetime.toLocaleString()}, ${d.totalLines} lines. Enter to open commit.`)
-    .on('mouseenter focus', showTooltip).on('mousemove', showTooltip)
-    .on('mouseleave blur', hideTooltip)
-    .on('keydown', (event, commit) => {
-      if (event.key === 'Enter') window.open(commit.url, '_blank', 'noopener');
-    });
-  dots.append('title').text(d => `${d.author}: ${d.totalLines} lines`);
+  const dotLayer = svg.append('g').attr('class', 'dots');
+  let dots = dotLayer.selectAll('circle');
+  let visibleCommits = commits;
 
   function isCommitSelected(selection, commit) {
     if (!selection) return false;
@@ -134,7 +129,7 @@ function renderScatterPlot(data, commits) {
     return x >= x0 && x <= x1 && y >= y0 && y <= y1;
   }
   function brushed(event) {
-    const selected = commits.filter(d => isCommitSelected(event.selection, d));
+    const selected = visibleCommits.filter(d => isCommitSelected(event.selection, d));
     dots.classed('selected', d => isCommitSelected(event.selection, d));
     document.querySelector('#selection-count').textContent = selected.length
       ? `${selected.length} commit${selected.length === 1 ? '' : 's'} selected`
@@ -146,6 +141,29 @@ function renderScatterPlot(data, commits) {
     .on('start brush end', brushed);
   brushLayer.call(brush);
   document.querySelector('#clear-selection').addEventListener('click', () => brushLayer.call(brush.move, null));
+  function update(filteredCommits, activeId = null) {
+    visibleCommits = filteredCommits;
+    tooltip.hidden = true;
+    brushLayer.call(brush.move, null);
+    // Keep the full-history axes and radius scale fixed for a stable comparison.
+    dots = dotLayer.selectAll('circle')
+      .data(d3.sort(filteredCommits, d => -d.totalLines), d => d.id)
+      .join('circle')
+      .attr('cx', d => xScale(d.datetime)).attr('cy', d => yScale(d.hourFrac))
+      .style('r', d => `${rScale(d.totalLines)}px`)
+      .attr('tabindex', 0).attr('role', 'button')
+      .attr('aria-label', d => `${d.id.slice(0, 8)}, ${d.datetime.toLocaleString()}, ${d.totalLines} lines. Enter to open commit.`)
+      .on('mouseenter focus', showTooltip).on('mousemove', showTooltip)
+      .on('mouseleave blur', hideTooltip)
+      .on('keydown', (event, commit) => {
+        if (event.key === 'Enter') window.open(commit.url, '_blank', 'noopener');
+      });
+    dots.classed('active-commit', d => d.id === activeId)
+      .classed('earlier-commit', d => activeId !== null && d.id !== activeId);
+    dots.selectAll('title').data(d => [d]).join('title').text(d => `${d.author}: ${d.totalLines} lines`);
+  }
+  update(commits);
+  return update;
 }
 
 try {
@@ -153,8 +171,67 @@ try {
   if (!data.length) throw new Error('The analysis CSV is empty.');
   if (data.some(d => !Number.isFinite(+d.datetime))) throw new Error('The CSV contains invalid commit dates.');
   const commits = processCommits(data);
-  renderCommitInfo(data, commits);
-  renderScatterPlot(data, commits);
+  const updateScatterPlot = renderScatterPlot(data, commits);
+  const slider = document.querySelector('#commit-progress');
+  const cutoffLabel = document.querySelector('#commit-cutoff');
+  const timeScale = d3.scaleTime().domain(d3.extent(commits, d => d.datetime)).range([0, 100]);
+  const colors = d3.scaleOrdinal([...new Set(data.map(d => d.type))].sort(), d3.schemeTableau10);
+  const names = {js: 'JavaScript', html: 'HTML', css: 'CSS', json: 'JSON', md: 'Markdown'};
+  const legend = d3.select('#file-legend').selectAll('li').data(colors.domain()).join('li');
+  legend.append('span').attr('class', 'file-swatch').style('background', d => colors(d));
+  legend.append('span').text(d => names[d] || d);
+
+  function updateFileDisplay(filteredCommits) {
+    const files = d3.groups(filteredCommits.flatMap(d => d.lines), d => d.file)
+      .map(([name, lines]) => ({name, lines: lines.sort((a, b) => a.datetime - b.datetime || a.line - b.line)}))
+      .sort((a, b) => b.lines.length - a.lines.length || a.name.localeCompare(b.name));
+    const rows = d3.select('#files').selectAll('.file-row').data(files, d => d.name).join(enter => {
+      const row = enter.append('div').attr('class', 'file-row');
+      const label = row.append('dt');
+      label.append('code'); label.append('small');
+      row.append('dd'); return row;
+    }).order();
+    rows.select('code').text(d => d.name);
+    rows.select('small').text(d => `${d.lines.length.toLocaleString()} lines`);
+    rows.select('dd').attr('aria-label', d => `${d.lines.length} lines in ${d.name}`)
+      .selectAll('.loc').data(d => d.lines, d => `${d.file}:${d.line}`)
+      .join('div').attr('class', 'loc').style('--color', d => colors(d.type))
+      .attr('title', d => `${d.file}:${d.line} · ${names[d.type] || d.type} · ${d.datetime.toLocaleDateString()}`);
+  }
+
+  const steps = d3.select('#scatter-story').selectAll('.step').data(commits, d => d.id)
+    .join('article').attr('class', 'step').attr('tabindex', 0);
+  steps.append('h3').text((d, i) => {
+    const hash = Object.keys(commitMessages).find(hash => hash.startsWith(d.id));
+    return hash ? commitMessages[hash] : `Commit ${i + 1}`;
+  });
+  steps.append('time').attr('datetime', d => d.datetime.toISOString())
+    .text(d => d.datetime.toLocaleString(undefined, {dateStyle: 'long', timeStyle: 'short'}));
+  steps.append('p').text(d => {
+    const count = new Set(d.lines.map(line => line.file)).size;
+    return `${d.totalLines} surviving ${d.totalLines === 1 ? 'line' : 'lines'} across ${count} ${count === 1 ? 'file' : 'files'}.`;
+  });
+  steps.append('a').attr('href', d => d.url).attr('target', '_blank').attr('rel', 'noopener')
+    .text(d => `View commit ${d.id.slice(0, 8)}`);
+
+  function updateUntil(cutoff, activeId = null) {
+    const filtered = commits.filter(d => d.datetime <= cutoff);
+    slider.value = timeScale(cutoff);
+    cutoffLabel.dateTime = cutoff.toISOString();
+    cutoffLabel.textContent = cutoff.toLocaleString(undefined, {dateStyle: 'long', timeStyle: 'short'});
+    slider.setAttribute('aria-valuetext', cutoffLabel.textContent);
+    steps.classed('is-active', d => d.id === activeId);
+    renderCommitInfo(filtered.flatMap(d => d.lines), filtered);
+    updateScatterPlot(filtered, activeId);
+    updateFileDisplay(filtered);
+  }
+  slider.addEventListener('input', () => updateUntil(timeScale.invert(Number(slider.value))));
+  document.querySelector('#show-all-commits').addEventListener('click', () => updateUntil(commits.at(-1).datetime));
+  steps.on('focusin', (event, d) => updateUntil(d.datetime, d.id));
+  updateUntil(commits.at(-1).datetime);
+  const scroller = scrollama().setup({step: '#scatter-story .step', offset: 0.5})
+    .onStepEnter(({element}) => updateUntil(element.__data__.datetime, element.__data__.id));
+  window.addEventListener('resize', () => scroller.resize());
 } catch (error) {
   console.error('Unable to load code history:', error);
   const message = document.querySelector('#meta-error');
