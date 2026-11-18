@@ -1,5 +1,6 @@
 // Commit subjects captured from this repository; unmatched new commits use a numbered title.
 export default {
+  "e16085be66ab08ccd3b89f777f52f7d3c2a3ef82": "Add Lab 8 animated code history and scrollytelling",
   "59fe1fd49fd9e6fa5d94ba6b2c3c5f92bd20a2e8": "Update code history data",
   "72ee4824f215d6cbb7bdf4f6ed2f0339abbe0d99": "Add Lab 6 code history visualization",
   "ceb8f9037f56a04052ce655e02a4eba4571bd9cd": "Add interactive project year chart and combined filters",
